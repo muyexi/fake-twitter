@@ -5,8 +5,8 @@ import { Button } from '@/components/Button';
 
 interface Props {
   name?: string;
-  onLogin: () => void;
-  onLogout: () => void;
+  onLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export const Header = (props: Props) => {
@@ -22,7 +22,7 @@ export const Header = (props: Props) => {
           {props.name ? (
           <>
             <span className="mr-2.5 text-sm text-black">
-              Welcome, <b>{props.name}</b>!
+              Welcome, {props.name}!
             </span>
             <Button size="small" onClick={props.onLogout} label="Log out" />
           </>
