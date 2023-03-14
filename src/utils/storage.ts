@@ -1,8 +1,13 @@
 import { User, Tweet } from '@/utils/type';
 
+export function getUsers(): User[] {
+  const users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
+  return users;
+}
+
 export function getUser(): User | null {
   const id = localStorage.getItem('currentUser');
-  let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
+  let users: User[] = getUsers();
 
   if (id) {
     users = users.filter((user) => user.id.toString() == id);
@@ -26,9 +31,9 @@ export function setUser(user: User) {
   localStorage.setItem('users', JSON.stringify(users));
 }
 
-const initialTweet: Tweet = {
-  id: 1,
-  userId: 1,
+export const initialTweet: Tweet = {
+  id: 0,
+  userId: 0,
   userName: 'admin',
   text: 'Welcome!',
   time: Date.now(),
@@ -36,7 +41,7 @@ const initialTweet: Tweet = {
 
 export function getTweets(id?: number): Tweet[] {
   let tweets: Tweet[] = JSON.parse(localStorage.getItem('tweets') || '[]');
-  if (id) {
+  if (id && id != 0) {
     tweets = tweets.filter((tweet) => tweet.userId === id);
   }
 
@@ -56,7 +61,7 @@ export function getTweet(id: number): Tweet {
 }
 
 export function setTweet(tweet: Tweet) {
-  let tweets = getTweets();
+  const tweets = getTweets();
   tweet.id = tweets.length + 1;
 
   tweets.push(tweet);
@@ -74,14 +79,26 @@ export function deleteTweet(id: number) {
 export function udpateTweet(id: number, text: string) {
   const tweets = getTweets();
   const index = tweets.findIndex((tweet) => tweet.id === id);
-  console.log('id:', id);
-  console.log('index:', index);
   tweets[index].text = text;
 
   localStorage.setItem('tweets', JSON.stringify(tweets));
 }
 
-export function login(user: User) {
+export function login(user: User): boolean {
+  const users: User[] = getUsers();
+  const filtered = users.filter(
+    (e) => e.name === user.name && e.password === user.password
+  );
+
+  if (filtered.length > 0) {
+    localStorage.setItem('currentUser', filtered[0].id.toString());
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function signup(user: User) {
   setUser(user);
   localStorage.setItem('currentUser', user.id.toString());
 }
