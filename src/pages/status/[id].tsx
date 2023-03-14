@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Tweet } from '@/utils/type';
 import { useRouter } from 'next/router';
-import { getTweet } from "@/utils/storage";
+import { deleteTweet, getTweet } from "@/utils/storage";
 import { TweetItem } from "@/components/TweetItem";
+import { useQueryClient } from 'react-query';
 
 interface Props {
   tweet?: Tweet;
@@ -22,9 +23,17 @@ export default function TweetPage (props: Props) {
     }
   }, [router.query, router.isReady]);
 
+  const queryClient = useQueryClient();
+
+  const onDelete = (id: number) => {
+    deleteTweet(id);
+    queryClient.invalidateQueries('tweets');
+  };
+
+
   return (
     <div>
-      {tweet && <TweetItem tweet={tweet} isOwner={false}/>}
+      {tweet && <TweetItem tweet={tweet} isOwner={false} onDelete={onDelete}/>}
     </div>
   );
 };
